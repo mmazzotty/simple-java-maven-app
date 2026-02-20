@@ -1,8 +1,25 @@
 pipeline {
     agent {
-        docker {
-            image 'maven:3.9.0'
-            args '-v /root/.m2:/root/.m2'
+        kubernetes {
+            yaml '''
+                apiVersion: v1
+                kind: Pod
+                spec:
+                  containers:
+                  - name: maven
+                    image: maven:3.9.0
+                    command:
+                    - sleep
+                    args:
+                    - infinity
+                    volumeMounts:
+                    - name: m2-cache
+                      mountPath: /root/.m2
+                  volumes:
+                  - name: m2-cache
+                    emptyDir: {}
+            '''
+            defaultContainer 'maven'
         }
     }
     stages {
